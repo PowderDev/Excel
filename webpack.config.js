@@ -34,10 +34,6 @@ const babelLoaders = () => {
         ]
     }
 
-    if (isDev) {
-        loaders.push('eslint-loader')
-    }
-
     return loaders
 }
 
@@ -61,9 +57,7 @@ const optimaze = () => {
 module.exports = {
     context: path.resolve(__dirname, 'src'),
     mode: 'development',
-    entry: {
-        main: './index.js',
-    },
+    entry: ['@babel/polyfill', './index.js'],
     output: {
         filename: filename('js'),
         path: path.resolve(__dirname, 'dist')
@@ -125,8 +119,9 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader',
-                options: babelLoaders()
+                use: [
+                    {loader: 'babel-loader', options: babelLoaders()},
+                    isDev ? {loader: 'eslint-loader'} : {}]
             }
         ]
     }
