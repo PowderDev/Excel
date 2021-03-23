@@ -14,7 +14,10 @@
         "no-trailing-spaces": "off",
         "arrow-parens": "off",
         "quotes": "off",
-        "eol-last": "off"
+        "eol-last": "off",
+        "require-jsdoc": "off",
+        "padded-blocks": "off",
+        "no-multi-spaces": "off"
     },
     "extends": ["eslint:recommended", "google"]
 }
