@@ -28,6 +28,24 @@ class Dom {
         this.$el.removeEventListener(eType, callback)
     }
 
+    closest(selector) {
+        return $(this.$el.closest(selector))
+    }
+
+    getCoords() {
+        return this.$el.getBoundingClientRect()
+    }
+
+    get dataset() {
+        return this.$el.dataset
+    }
+
+    css(styles = {}) {
+        Object.keys(styles).forEach(key => {
+            this.$el.style[key] = styles[key]
+        })
+    }
+
     append(node) {
         if (Element.prototype.append) {
             this.$el.append(node?.$el)
