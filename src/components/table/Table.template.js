@@ -4,8 +4,19 @@ const CODES = {
     Z: 90
 }
 
-function createCell(_, index) {
-    return `<div class="cell" data-col="${index}"  contenteditable></div>`
+// function createCell(colIndex, rowIndex) {
+//     return `<div class="cell" data-col="${colIndex}" data-row="${rowIndex}"  contenteditable></div>`
+// }
+
+function createCell(rowIndex) {
+    return function(_, colIndex) {
+        return `
+        <div class="cell"
+            data-col="${colIndex}"
+            data-id="${rowIndex}:${colIndex}" 
+            contenteditable
+        ></div>`
+    }
 }
 
 function createCol(Char, index) {
@@ -38,15 +49,19 @@ export function createTable(rowsCount = 300) {
         .map((el, i) => {
             return String.fromCharCode(CODES.A + i)
         })
-        .map((el, i) => createCol(el, i))
+        .map(createCol)
         .join('')
 
     rows.push(createRow(cols))
 
-    const cells = new Array(colsCount).fill('').map((el, i) => createCell(el, i)).join('')
 
-    for (let i = 0; i < rowsCount; i++) {
-        rows.push(createRow(cells, i + 1))
+    for (let rowIndex = 0; rowIndex < rowsCount; rowIndex++) {
+    const cells = new Array(colsCount)
+        .fill('')
+        .map(createCell(rowIndex))
+        .join('')
+
+        rows.push(createRow(cells, rowIndex + 1))
     }
 
     return rows.join('')
