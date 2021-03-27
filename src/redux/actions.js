@@ -34,3 +34,8 @@ export function changeTitles(data) {
         payload: data
     }
 }
+
+export function changeOpenedTime() {
+    return { type: types.CHANGE_OPENED_TIME }
+}
+

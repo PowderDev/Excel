@@ -1,7 +1,6 @@
 /* eslint-disable max-len */
 import { ExcelComponent } from "@core/ExcelComponent";
 import { $ } from '@core/dom'
-import { parse } from "../../core/parse";
 
 export class Formula extends ExcelComponent {
     static className = 'excel__formula'

@@ -36,6 +36,9 @@ export function rootReducer(state, action) {
         case types.CHANGE_TITLE:
             return {...state, appTitle: action.payload}
 
+        case types.CHANGE_OPENED_TIME:
+            return {...state, openedDate: new Date().toJSON()}
+
         default: return state
     }
 }
