@@ -17,11 +17,11 @@ class Dom {
     }
 
     text(text) {
-        if (typeof text === 'string') {
+        if (typeof text !== 'undefined') {
             this.$el.textContent = text
             return this
         }
-        if (this.$el.tagName.toLowerCase === 'input'){
+        if (this.$el.tagName.toLowerCase() === 'input'){
             return this.$el.value.trim()
         }
         return this.$el.textContent.trim()
@@ -97,6 +97,22 @@ class Dom {
             }
         }
         return this.$el.dataset.id
+    }
+
+    getStyles(styles = []) {
+        return styles.reduce((acc, s) =>{
+            acc[s] = this.$el.style[s]
+            return acc
+        }, {})
+    }
+
+    attr(name, value) {
+        if (value !== undefined) {
+            this.$el.setAttribute(name, value)
+            return this
+        }
+
+        return this.$el.getAttribute(name)
     }
 }
 
