@@ -1,3 +1,4 @@
+/* eslint-disable keyword-spacing */
 /* eslint-disable space-before-blocks */
 /* eslint-disable max-len */
 /* eslint-disable no-invalid-this */
@@ -8,21 +9,32 @@ import { createTable } from "./Table.template";
 import { $ } from '@core/dom'
 import { TableSelection } from "./TableSelection";
 import { range, nextSelector } from '@core/utils'
+import resizeHandler from './Table.resize'
+import * as actions from "@/redux/actions";
+import { defaultStyles } from "@/constans";
+import { debounce } from "../../core/utils";
+import { parse } from "@core/parse";
 
 
 export class Table extends ExcelComponent {
     static className = 'excel__table'
+    static rowsCount = 300
 
     constructor($root, options) {
         super($root, {
             name: 'Table',
             listeners: ['mousedown', 'keydown', 'input'],
+            subscribe: ['currentText'],
             ...options
         })
     }
+
+    prepate() {
+        this.onInput = debounce(this.onInput, 300)
+    }
         
     toHtml() {
-        return createTable()
+        return createTable(Table.rowsCount, this.store.getState())
     }
 
     init() {
@@ -30,63 +42,45 @@ export class Table extends ExcelComponent {
         this.selection = new TableSelection()
 
         const $cell = $(this.$root).findOneBySelector('[data-id="0:0"]')
-        this.selection.selectOneField($cell)
-        this.$emit('table:select', $cell)
+        this.selectCell($cell)
 
         this.$on('fomula:input', text => {
-            this.selection.current.text(text)
+            this.selection.current
+                .attr('data-value', text)
+                .text(parse(text))
+            this.$dispatch(actions.changeText({
+                id: this.selection.current.getId(),
+                text
+            }))
         })
 
         this.$on('fomula:enter', da => {
             this.selection.current.focus()
         })
+
+        this.$on('toolbar:applyStyle', style => {
+            this.selection.applyStyle(style)
+            this.selectCell(this.selection.current)
+            this.$dispatch(actions.applyStyle({
+                style,
+                ids: this.selection.selectedIds 
+            }))
+        })
     }
+
+    async resizeTable(e, resizeType) {
+        try {
+            const data = await resizeHandler(resizeType, this.$root, e, $(e.target))
+            this.$dispatch(actions.tableResize(data))
+        } catch(err) {
+            console.warn('Resize Error: ', err.message);
+        }
+    } 
 
     onMousedown(e) {
         const resizeType = e.target.dataset.resize
         if (resizeType) {
-            const $resizer = $(e.target);
-            const $parent = $resizer.closest('[data-type="resizable"]')
-            const coords = $parent.getCoords();
-            const cols = this.$root.querySelectorAll(`[data-col="${$parent.dataset.col}"]`)
-            let delta;
-            let value;
-
-            $resizer.css({
-                opacity: 1,
-                bottom: '-2000px'
-            })
-
-            document.onmousemove = e => {
-                if (resizeType == 'row') {
-                    delta =  e.pageY - coords.bottom
-                    value = ( coords.height + delta ) + 'px'
-                    $resizer.css({ bottom: -delta + 'px', right: '-2000px' })
-                } else {
-                    delta =  e.pageX - coords.right
-                    value = ( coords.width + delta ) + 'px'
-                    $resizer.css({ right: -delta + 'px' })
-                }
-            }
-
-            document.onmouseup = () => {
-
-                if (resizeType == 'col'){
-                    $parent.css({width: value})
-                    cols.forEach(el => el.style.width = value )
-                } else {
-                    $parent.css({height: value})
-                }
-
-                $resizer.css({
-                    opacity: 0,
-                    bottom: 0,
-                    right: 0
-                })
-                document.onmouseup = null
-                document.onmousemove = null
-            }
-            
+            this.resizeTable(e, resizeType)
         } else if (e.target.dataset.id) {
             const $target = $(e.target)
 
@@ -107,7 +101,7 @@ export class Table extends ExcelComponent {
                 this.selection.selectGroupOfFields($cells)
 
             } else {
-                this.selection.selectOneField($target)
+                this.selectCell($target)
             }
         }
     }
@@ -121,13 +115,21 @@ export class Table extends ExcelComponent {
             e.preventDefault()
             const id =  this.selection.current.getId(true)
             const $next = $(this.$root).findOneBySelector(nextSelector(key, id))
-            this.selection.selectOneField($next)
-            this.$emit('table:select', $next)
+            this.selectCell($next)
         }
+    }
+
+    selectCell($cell) {
+        this.selection.selectOneField($cell)
+        this.$emit('table:select', $cell)
+        const styles = $cell.getStyles(Object.keys(defaultStyles))
+        this.$dispatch(actions.changeStyles(styles))
     }
     
     onInput(e) {
-        this.$emit('table:input', $(e.target))
+        this.$dispatch(actions.changeText({
+            id: this.selection.current.getId(),
+            text: $(e.target).text() 
+        }))
     }
-
 }

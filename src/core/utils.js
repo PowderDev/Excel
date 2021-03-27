@@ -38,3 +38,35 @@ export function nextSelector(key, { col, row }) {
     return `[data-id="${row}:${col}"]`
 }
 
+export function storage(key, data) {
+    if (!data) {
+        return JSON.parse(localStorage.getItem(key))
+    }
+    localStorage.setItem(key, JSON.stringify(data))
+}
+
+
+export function isEqual(prev, curr) {
+    if (typeof prev === 'object' && typeof curr === 'object') {
+        return JSON.stringify(prev) === JSON.stringify(curr)
+    }
+    return prev === curr
+}
+
+
+export function camelToDashCase(str) {
+    return str.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
+}
+
+export function debounce(fn, wait) {
+    let timeout
+    return function(...args) {
+        const later = () => {
+            clearTimeout(timeout)
+            // eslint-disable-next-line
+            fn.apply(this, args)
+        }
+        clearTimeout(timeout)
+        timeout = setTimeout(later, wait)
+    }
+}

@@ -2,6 +2,11 @@
 @import '../mixins';
 
 .excel__toolbar {
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
     position: absolute;
     left: 0;
     right: 0;

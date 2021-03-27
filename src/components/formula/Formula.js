@@ -1,6 +1,7 @@
 /* eslint-disable max-len */
 import { ExcelComponent } from "@core/ExcelComponent";
 import { $ } from '@core/dom'
+import { parse } from "../../core/parse";
 
 export class Formula extends ExcelComponent {
     static className = 'excel__formula'
@@ -8,6 +9,7 @@ export class Formula extends ExcelComponent {
         super($root, {
             name: 'Formula',
             listeners: ['input', 'keydown'],
+            subscribe: ['currentText'],
             ...options
         })
     }
@@ -23,11 +25,7 @@ export class Formula extends ExcelComponent {
         super.init()
         this.$formula = $(this.$root).findOneBySelector('#formula-input')
         this.$on('table:select', $cell => {
-            this.$formula.text($cell.text())
-        })
-        
-        this.$on('table:input', $cell => {
-            this.$formula.text($cell.text())
+            this.$formula.text($cell.dataset.value)
         })
     }
 
@@ -43,6 +41,10 @@ export class Formula extends ExcelComponent {
             e.preventDefault()
             this.$emit('fomula:enter', true)
         }
+    }
+
+    storeChanged(changes) {
+        this.$formula.text(changes.currentText)
     }
 
 } 
