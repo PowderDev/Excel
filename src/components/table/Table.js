@@ -60,7 +60,6 @@ export class Table extends ExcelComponent {
 
         this.$on('toolbar:applyStyle', style => {
             this.selection.applyStyle(style)
-            this.selectCell(this.selection.current)
             this.$dispatch(actions.applyStyle({
                 style,
                 ids: this.selection.selectedIds 

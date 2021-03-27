@@ -114,6 +114,11 @@ class Dom {
 
         return this.$el.getAttribute(name)
     }
+
+    clearHtml() {
+        this.html('')
+        return this
+    }
 }
 
 export function $(selector) {
