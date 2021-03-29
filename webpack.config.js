@@ -23,21 +23,6 @@ const cssLoaders = (extra) => {
     if (extra) loaders.push(extra)
     return loaders
 }
-
-const babelLoaders = () => {
-    const loaders =
-     {
-        presets: [
-            '@babel/preset-env'
-        ],
-        plugins: [
-            '@babel/plugin-proposal-class-properties'
-        ]
-    }
-
-    return loaders
-}
-
 const optimaze = () => {
     const config = {
         splitChunks: {
@@ -122,8 +107,7 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                use: [
-                    {loader: 'babel-loader', options: babelLoaders()}]
+                use: ['babel-loader']
             }
         ]
     }

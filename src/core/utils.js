@@ -1,3 +1,5 @@
+import { defaultStyles } from '@/constans'
+
 export function capitalize(str) {   
     if (typeof str !== 'string') {
         return ''
@@ -69,4 +71,18 @@ export function debounce(fn, wait) {
         clearTimeout(timeout)
         timeout = setTimeout(later, wait)
     }
+}
+
+export function getDefaultState() {
+    return {
+        rowState: {},
+        colState: {},
+        dataState: {},
+        stylesState: {},
+        currentText: "",
+        appTitle: "Новая таблица",
+        currentStyles: defaultStyles,
+        openedDate: new Date().toJSON()
+}
+
 }
